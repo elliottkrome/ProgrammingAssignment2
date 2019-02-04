@@ -1,11 +1,17 @@
+* assignment: caching the inverse of a matrix
+** comments to be embedded at top of ~cachematrix.R~
+#+BEGIN_SRC R :tangle cachematrix.R
 # Over the course of running this-or-that algorithm on some data, the
 #  algorithm might repeatedly call for the inverse of a matrix (in a
 #  manner which might not be predictable at the outset).
 # Because matrix inversion can become very expensive for large
 #  matrices, it would be nice to only do the matrix inversion the first
 #  time it is requested, and cache the result for later use.
-# # The following two functions allow for this.
+# # The following two functions allow for this. 
 
+#+END_SRC
+** <<<makeCacheMatrix>>>
+#+BEGIN_SRC R :tangle cachematrix.R
 # `makeCacheMatrix' is the constructor function for a "cachedMatrix". 
 # It is manipulated by the `cacheSolve' function
 # It groups the following 4 set / get methods to store values
@@ -27,7 +33,10 @@ makeCacheMatrix <- function(x = numeric()) {
        setinv = setinv,
        getinv = getinv)
 }
+#+END_SRC
 
+** <<<cacheSolve>>>
+#+BEGIN_SRC R  :tangle cachematrix.R
 # `cacheSolve' manipulates "cacheMatrix" objects (lists of functions)
 # If the matrix has already been inverted, it simply fetches that data.
 #  Otherwise, it calls the function `solve' to do the inversion.
@@ -42,3 +51,14 @@ cacheSolve <- function(x, ...) {
   x$setinv(inv)
   inv
 }
+#+END_SRC
+
+** test
+#+BEGIN_SRC R :tangle test.R :results output
+source("cachematrix.R")
+
+m <- makeCacheMatrix(toeplitz(c(3:-1)))
+
+cacheSolve(m)  # does the solving (first time the inverse has been requested)
+cacheSolve(m)  # "getting cached message" (no need to solve now)
+#+END_SRC
